@@ -19,14 +19,13 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Clone GitLab repo
-      run: git clone --branch dev https://git.suyu.dev/suyu/suyu.git mirror
+      run: git clone --branch android https://github.com/SSimco/Cemu.git mirror
       
     - name: Copy GitHub Action file to cloned repo
       run: |
         mkdir -p mirror/.github/workflows/
-        cp .github/workflows/mirror.yml mirror/.github/workflows/
-        cp .github/workflows/android-9-build.yml mirror/.github/workflows/
-        cp .github/dependabot.yml mirror/.github/
+        cp .github/workflows/mirror_github.yml mirror/.github/workflows/
+        
         
     - name: Commit and force push to GitHub
       run: |
