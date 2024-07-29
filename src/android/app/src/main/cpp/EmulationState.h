@@ -47,9 +47,8 @@ class EmulationState {
 		fillGraphicPacks();
 	}
 
-	void initializeActiveSettings(const fs::path& dataPath, const fs::path& cachePath)
-	{
-		ActiveSettings::SetPaths({}, dataPath, dataPath, cachePath, dataPath);
+	void ActiveSettings(bool isPortableMode)
+        {
 	}
 
 	void clearSurface(bool isMainCanvas)
