@@ -16,7 +16,7 @@ jobs:
     name: Sync latest commits from upstream repo
     steps:
     - name: Checkout target repo
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
           fetch-depth: 0
     - name: Sync upstream changes
