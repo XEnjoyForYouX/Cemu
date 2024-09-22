@@ -15,6 +15,9 @@
 #if BOOST_OS_LINUX && HAS_WAYLAND
 #include "helpers/wxWayland.h"
 #endif
+#if __WXGTK__
+#include <glib.h>
+#endif
 
 #include <wx/image.h>
 #include <wx/filename.h>
@@ -79,7 +82,6 @@ void CemuApp::DeterminePaths(std::set<fs::path>& failedWriteAccess) // for Windo
 {
 	std::error_code ec;
 	bool isPortable = false;
-	GuiSystem::registerKeyCodeToStringCallback(rawKeyCodeToString);
 	fs::path user_data_path, config_path, cache_path, data_path;
 	auto standardPaths = wxStandardPaths::Get();
 	fs::path exePath(wxHelper::MakeFSPath(standardPaths.GetExecutablePath()));
@@ -235,6 +237,7 @@ void CemuApp::InitializeExistingMLCOrFail(fs::path mlc)
 
 bool CemuApp::OnInit()
 {
+	GuiSystem::registerKeyCodeToStringCallback(rawKeyCodeToString);
 #if __WXGTK__
 	GTKSuppressDiagnostics(G_LOG_LEVEL_MASK & ~G_LOG_FLAG_FATAL);
 #endif
