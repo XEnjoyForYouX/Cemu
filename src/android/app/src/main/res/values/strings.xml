@@ -158,7 +158,7 @@
     <string name="input_finish_edit_label">Done</string>
     <string name="move_inputs_description">Move inputs</string>
     <string name="resize_inputs_description">Resize inputs</string>
-    <string name="reset_overlay_inputs">Reset overlay inputs</string>
+    <string name="reset_input_overlay">Reset input overlay</string>
     <string name="edit_inputs">Edit inputs</string>
     <string name="show_pad">Show pad</string>
     <string name="replace_tv_with_pad">Replace TV with PAD</string>
@@ -176,4 +176,19 @@
     <string name="game_not_found">Unable to launch game because the base files were not found.</string>
     <string name="failed_create_surface_error">Failed creating surface: %1$s</string>
     <string name="failed_initialize_renderer_error">Failed to initialize renderer: %1$s</string>
+    <string name="open_cemu_folder">Open Cemu folder</string>
+    <string name="failed_to_open_cemu_folder">Could not open Cemu folder</string>
+    <string name="stretch">Stretch</string>
+    <string name="keep_aspect_ratio">Keep aspect ratio</string>
+    <string name="bilinear">Bilinear</string>
+    <string name="bicubic">Bicubic</string>
+    <string name="hermite">Hermite</string>
+    <string name="nearest_neighbor">Nearest neighbor</string>
+    <string name="fullscreen_scaling">Fullscreen scaling</string>
+    <string name="upscale_filter">Upscale filter</string>
+    <string name="downscale_filter">Downscale filter</string>
+    <string name="overlay_text_scale">Overlay text scale</string>
+    <string name="notifications_text_scale">Notifications text scale</string>
+    <string name="exit">Exit</string>
+    <string name="show_input_overlay">Show input overlay</string>
 </resources>

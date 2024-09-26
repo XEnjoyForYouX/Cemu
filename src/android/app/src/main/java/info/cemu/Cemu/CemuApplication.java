@@ -3,23 +3,40 @@ package info.cemu.Cemu;
 import android.app.Application;
 import android.util.DisplayMetrics;
 
-import info.cemu.Cemu.NativeLibrary;
-import info.cemu.Cemu.utils.FileUtil;
+import java.io.File;
+
+import info.cemu.Cemu.nativeinterface.NativeEmulation;
+import info.cemu.Cemu.nativeinterface.NativeGraphicPacks;
 
 public class CemuApplication extends Application {
+    static {
+        System.loadLibrary("CemuAndroid");
+    }
+
     private static CemuApplication application;
+
+    public CemuApplication() {
+        application = this;
+    }
 
     public static CemuApplication getApplication() {
         return application;
     }
 
+    public File getInternalFolder() {
+        var externalFilesDir = getExternalFilesDir(null);
+        if (externalFilesDir != null)
+            return externalFilesDir;
+        return getFilesDir();
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
-        application = this;
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        NativeLibrary.setDPI(displayMetrics.density);
-        NativeLibrary.initializeActiveSettings(getExternalFilesDir(null).getAbsoluteFile().toString(), getExternalFilesDir(null).getAbsoluteFile().toString());
-        NativeLibrary.initializeEmulation();
+        NativeEmulation.setDPI(displayMetrics.density);
+        NativeEmulation.initializeActiveSettings(getInternalFolder().toString(), getInternalFolder().toString());
+        NativeEmulation.initializeEmulation();
+        NativeGraphicPacks.refreshGraphicPacks();
     }
 }
