@@ -14,12 +14,11 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import info.cemu.Cemu.R;
-import info.cemu.Cemu.databinding.GenericRecyclerViewLayoutBinding;
-import info.cemu.Cemu.guibasecomponents.CheckboxRecyclerViewItem;
+import info.cemu.Cemu.databinding.LayoutGenericRecyclerViewBinding;
 import info.cemu.Cemu.guibasecomponents.GenericRecyclerViewAdapter;
-import info.cemu.Cemu.guibasecomponents.SelectionAdapter;
 import info.cemu.Cemu.guibasecomponents.SingleSelectionRecyclerViewItem;
 import info.cemu.Cemu.guibasecomponents.SliderRecyclerViewItem;
+import info.cemu.Cemu.guibasecomponents.ToggleRecyclerViewItem;
 import info.cemu.Cemu.nativeinterface.NativeInput;
 
 
@@ -37,10 +36,10 @@ public class InputOverlaySettingsFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        var binding = GenericRecyclerViewLayoutBinding.inflate(inflater, container, false);
+        var binding = LayoutGenericRecyclerViewBinding.inflate(inflater, container, false);
         GenericRecyclerViewAdapter genericRecyclerViewAdapter = new GenericRecyclerViewAdapter();
 
-        CheckboxRecyclerViewItem inputOverlayCheckbox = new CheckboxRecyclerViewItem(
+        ToggleRecyclerViewItem inputOverlayToggle = new ToggleRecyclerViewItem(
                 getString(R.string.input_overlay),
                 getString(R.string.enable_input_overlay),
                 overlaySettings.isOverlayEnabled(),
@@ -48,9 +47,9 @@ public class InputOverlaySettingsFragment extends Fragment {
                     overlaySettings.setOverlayEnabled(checked);
                     overlaySettings.saveSettings();
                 });
-        genericRecyclerViewAdapter.addRecyclerViewItem(inputOverlayCheckbox);
+        genericRecyclerViewAdapter.addRecyclerViewItem(inputOverlayToggle);
 
-        CheckboxRecyclerViewItem vibrateOnTouchCheckbox = new CheckboxRecyclerViewItem(
+        ToggleRecyclerViewItem vibrateOnTouchToggle = new ToggleRecyclerViewItem(
                 getString(R.string.vibrate),
                 getString(R.string.enable_vibrate_on_touch),
                 overlaySettings.isVibrateOnTouchEnabled(),
@@ -58,7 +57,7 @@ public class InputOverlaySettingsFragment extends Fragment {
                     overlaySettings.setVibrateOnTouchEnabled(checked);
                     overlaySettings.saveSettings();
                 });
-        genericRecyclerViewAdapter.addRecyclerViewItem(vibrateOnTouchCheckbox);
+        genericRecyclerViewAdapter.addRecyclerViewItem(vibrateOnTouchToggle);
 
         SliderRecyclerViewItem alphaSlider = new SliderRecyclerViewItem(
                 getString(R.string.alpha_slider),
@@ -71,21 +70,12 @@ public class InputOverlaySettingsFragment extends Fragment {
                 });
         genericRecyclerViewAdapter.addRecyclerViewItem(alphaSlider);
 
-        SelectionAdapter<Integer> controllerAdapter = new SelectionAdapter<>(
-                IntStream.range(0, NativeInput.MAX_CONTROLLERS)
-                        .mapToObj(i -> new SelectionAdapter.ChoiceItem<>(t -> t.setText(getString(R.string.controller_numbered, i + 1)), i))
-                        .collect(Collectors.toList()),
-                overlaySettings.getControllerIndex()
-        );
         SingleSelectionRecyclerViewItem<Integer> controllerSelection = new SingleSelectionRecyclerViewItem<>(
                 getString(R.string.overlay_controller),
-                getString(R.string.controller_numbered, overlaySettings.getControllerIndex() + 1),
-                controllerAdapter,
-                (controllerIndex, selectionRecyclerViewItem) -> {
-                    overlaySettings.setControllerIndex(controllerIndex);
-                    selectionRecyclerViewItem.setDescription(getString(R.string.controller_numbered, controllerIndex + 1));
-                    overlaySettings.saveSettings();
-                });
+                overlaySettings.getControllerIndex(),
+                IntStream.range(0, NativeInput.MAX_CONTROLLERS).boxed().collect(Collectors.toList()),
+                controllerIndex -> getString(R.string.controller_numbered, controllerIndex + 1),
+                (controllerIndex) -> overlaySettings.setControllerIndex(controllerIndex));
         genericRecyclerViewAdapter.addRecyclerViewItem(controllerSelection);
 
         binding.recyclerView.setAdapter(genericRecyclerViewAdapter);

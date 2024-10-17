@@ -64,6 +64,12 @@ public class NativeSettings {
 
     public static native int getAudioDeviceVolume(boolean tv);
 
+    public static final int AUDIO_BLOCK_COUNT = 24;
+
+    public static native void setAudioLatency(int latency);
+
+    public static native int getAudioLatency();
+
     public static final int OVERLAY_SCREEN_POSITION_DISABLED = 0;
     public static final int OVERLAY_SCREEN_POSITION_TOP_LEFT = 1;
     public static final int OVERLAY_SCREEN_POSITION_TOP_CENTER = 2;
@@ -127,4 +133,21 @@ public class NativeSettings {
     public static native boolean isNotificationFriendListEnabled();
 
     public static native void setNotificationFriendListEnabled(boolean enabled);
+
+    public static final int CONSOLE_LANGUAGE_JAPANESE = 0;
+    public static final int CONSOLE_LANGUAGE_ENGLISH = 1;
+    public static final int CONSOLE_LANGUAGE_FRENCH = 2;
+    public static final int CONSOLE_LANGUAGE_GERMAN = 3;
+    public static final int CONSOLE_LANGUAGE_ITALIAN = 4;
+    public static final int CONSOLE_LANGUAGE_SPANISH = 5;
+    public static final int CONSOLE_LANGUAGE_CHINESE = 6;
+    public static final int CONSOLE_LANGUAGE_KOREAN = 7;
+    public static final int CONSOLE_LANGUAGE_DUTCH = 8;
+    public static final int CONSOLE_LANGUAGE_PORTUGUESE = 9;
+    public static final int CONSOLE_LANGUAGE_RUSSIAN = 10;
+    public static final int CONSOLE_LANGUAGE_TAIWANESE = 11;
+
+    public static native int getConsoleLanguage();
+
+    public static native void setConsoleLanguage(int consoleLanguage);
 }

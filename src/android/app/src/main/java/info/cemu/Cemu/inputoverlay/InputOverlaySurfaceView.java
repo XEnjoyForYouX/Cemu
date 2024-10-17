@@ -1,11 +1,11 @@
 package info.cemu.Cemu.inputoverlay;
 
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
@@ -41,18 +41,17 @@ public class InputOverlaySurfaceView extends SurfaceView implements View.OnTouch
     }
 
     public void setInputMode(InputMode inputMode) {
-        if (inputs != null) {
-            if (this.inputMode != InputMode.DEFAULT) {
-                for (var input : inputs) {
-                    input.saveConfiguration();
-                }
-            } else {
-                for (var input : inputs) {
-                    input.reset();
-                }
-            }
-        }
         this.inputMode = inputMode;
+        if (inputs == null) {
+            return;
+        }
+        if (this.inputMode != InputMode.DEFAULT) {
+            return;
+        }
+        for (var input : inputs) {
+            input.reset();
+            input.saveConfiguration();
+        }
     }
 
     public InputMode getInputMode() {
@@ -97,10 +96,13 @@ public class InputOverlaySurfaceView extends SurfaceView implements View.OnTouch
     private final Vibrator vibrator;
     private final VibrationEffect buttonTouchVibrationEffect = VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK);
     private final boolean vibrateOnTouch;
+    private static final int INPUTS_MIN_WIDTH_HEIGHT_DP = 40;
+    private final int inputsMinWidthHeight;
 
     public InputOverlaySurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
         context.getSystemService(Context.VIBRATOR_SERVICE);
+        inputsMinWidthHeight = Math.round(INPUTS_MIN_WIDTH_HEIGHT_DP * ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT));
         vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         setOnTouchListener(this);
         settingsProvider = new InputOverlaySettingsProvider(context);
@@ -267,10 +269,21 @@ public class InputOverlaySurfaceView extends SurfaceView implements View.OnTouch
     }
 
     void onJoystickStateChange(OverlayJoystick joystick, float x, float y) {
-        float up = y < 0 ? -y : 0;
-        float down = y > 0 ? y : 0;
-        float left = x < 0 ? -x : 0;
-        float right = x > 0 ? x : 0;
+        float up, down, left, right;
+        if (y < 0) {
+            up = -y;
+            down = 0;
+        } else {
+            up = 0;
+            down = y;
+        }
+        if (x < 0) {
+            left = -x;
+            right = 0;
+        } else {
+            left = 0;
+            right = x;
+        }
         switch (nativeControllerType) {
             case NativeInput.EMULATED_CONTROLLER_TYPE_VPAD ->
                     onVPADJoystickStateChange(joystick, up, down, left, right);
@@ -300,7 +313,6 @@ public class InputOverlaySurfaceView extends SurfaceView implements View.OnTouch
 
         inputs.add(new RoundButton(
                 resources,
-                R.drawable.button_a_pressed,
                 R.drawable.button_a,
                 InputOverlaySurfaceView.this::onButtonStateChange,
                 OverlayButton.A,
@@ -308,7 +320,6 @@ public class InputOverlaySurfaceView extends SurfaceView implements View.OnTouch
         ));
         inputs.add(new RoundButton(
                 resources,
-                R.drawable.button_b_pressed,
                 R.drawable.button_b,
                 InputOverlaySurfaceView.this::onButtonStateChange,
                 OverlayButton.B,
@@ -318,7 +329,6 @@ public class InputOverlaySurfaceView extends SurfaceView implements View.OnTouch
         if (nativeControllerType != NativeInput.EMULATED_CONTROLLER_TYPE_WIIMOTE) {
             inputs.add(new RoundButton(
                     resources,
-                    R.drawable.button_x_pressed,
                     R.drawable.button_x,
                     InputOverlaySurfaceView.this::onButtonStateChange,
                     OverlayButton.X,
@@ -326,7 +336,6 @@ public class InputOverlaySurfaceView extends SurfaceView implements View.OnTouch
             ));
             inputs.add(new RoundButton(
                     resources,
-                    R.drawable.button_y_pressed,
                     R.drawable.button_y,
                     InputOverlaySurfaceView.this::onButtonStateChange,
                     OverlayButton.Y,
@@ -334,7 +343,6 @@ public class InputOverlaySurfaceView extends SurfaceView implements View.OnTouch
             ));
             inputs.add(new RectangleButton(
                     resources,
-                    R.drawable.button_zl_pressed,
                     R.drawable.button_zl,
                     InputOverlaySurfaceView.this::onButtonStateChange,
                     OverlayButton.ZL,
@@ -342,7 +350,6 @@ public class InputOverlaySurfaceView extends SurfaceView implements View.OnTouch
             ));
             inputs.add(new RectangleButton(
                     resources,
-                    R.drawable.button_l_pressed,
                     R.drawable.button_l,
                     InputOverlaySurfaceView.this::onButtonStateChange,
                     OverlayButton.L,
@@ -350,7 +357,6 @@ public class InputOverlaySurfaceView extends SurfaceView implements View.OnTouch
             ));
             inputs.add(new RectangleButton(
                     resources,
-                    R.drawable.button_zr_pressed,
                     R.drawable.button_zr,
                     InputOverlaySurfaceView.this::onButtonStateChange,
                     OverlayButton.ZR,
@@ -358,7 +364,6 @@ public class InputOverlaySurfaceView extends SurfaceView implements View.OnTouch
             ));
             inputs.add(new RectangleButton(
                     resources,
-                    R.drawable.button_r_pressed,
                     R.drawable.button_r,
                     InputOverlaySurfaceView.this::onButtonStateChange,
                     OverlayButton.R,
@@ -367,7 +372,6 @@ public class InputOverlaySurfaceView extends SurfaceView implements View.OnTouch
             inputs.add(new Joystick(
                     resources,
                     R.drawable.stick_background,
-                    R.drawable.stick_inner_pressed,
                     R.drawable.stick_inner,
                     InputOverlaySurfaceView.this::onJoystickStateChange,
                     OverlayJoystick.RIGHT,
@@ -377,7 +381,6 @@ public class InputOverlaySurfaceView extends SurfaceView implements View.OnTouch
 
         inputs.add(new RoundButton(
                 resources,
-                R.drawable.button_minus_pressed,
                 R.drawable.button_minus,
                 InputOverlaySurfaceView.this::onButtonStateChange,
                 OverlayButton.MINUS,
@@ -385,7 +388,6 @@ public class InputOverlaySurfaceView extends SurfaceView implements View.OnTouch
         ));
         inputs.add(new RoundButton(
                 resources,
-                R.drawable.button_plus_pressed,
                 R.drawable.button_plus,
                 InputOverlaySurfaceView.this::onButtonStateChange,
                 OverlayButton.PLUS,
@@ -395,7 +397,6 @@ public class InputOverlaySurfaceView extends SurfaceView implements View.OnTouch
         inputs.add(new DPadInput(
                 resources,
                 R.drawable.dpad_background,
-                R.drawable.dpad_button_pressed,
                 R.drawable.dpad_button,
                 InputOverlaySurfaceView.this::onButtonStateChange,
                 getOverlaySettingsForInput(InputOverlaySettingsProvider.Input.DPAD)
@@ -403,7 +404,6 @@ public class InputOverlaySurfaceView extends SurfaceView implements View.OnTouch
         inputs.add(new Joystick(
                 resources,
                 R.drawable.stick_background,
-                R.drawable.stick_inner_pressed,
                 R.drawable.stick_inner,
                 InputOverlaySurfaceView.this::onJoystickStateChange,
                 OverlayJoystick.LEFT,
@@ -413,7 +413,6 @@ public class InputOverlaySurfaceView extends SurfaceView implements View.OnTouch
         if (nativeControllerType == NativeInput.EMULATED_CONTROLLER_TYPE_WIIMOTE) {
             inputs.add(new RoundButton(
                     resources,
-                    R.drawable.button_c_pressed,
                     R.drawable.button_c,
                     InputOverlaySurfaceView.this::onButtonStateChange,
                     OverlayButton.C,
@@ -421,7 +420,6 @@ public class InputOverlaySurfaceView extends SurfaceView implements View.OnTouch
             ));
             inputs.add(new RoundButton(
                     resources,
-                    R.drawable.button_z_pressed,
                     R.drawable.button_z,
                     InputOverlaySurfaceView.this::onButtonStateChange,
                     OverlayButton.Z,
@@ -429,7 +427,6 @@ public class InputOverlaySurfaceView extends SurfaceView implements View.OnTouch
             ));
             inputs.add(new RoundButton(
                     resources,
-                    R.drawable.button_home_pressed,
                     R.drawable.button_home,
                     InputOverlaySurfaceView.this::onButtonStateChange,
                     OverlayButton.HOME,
@@ -440,7 +437,6 @@ public class InputOverlaySurfaceView extends SurfaceView implements View.OnTouch
                 && nativeControllerType != NativeInput.EMULATED_CONTROLLER_TYPE_WIIMOTE) {
             inputs.add(new RoundButton(
                     resources,
-                    R.drawable.button_stick_pressed,
                     R.drawable.button_stick,
                     InputOverlaySurfaceView.this::onButtonStateChange,
                     OverlayButton.L_STICK,
@@ -448,7 +444,6 @@ public class InputOverlaySurfaceView extends SurfaceView implements View.OnTouch
             ));
             inputs.add(new RoundButton(
                     resources,
-                    R.drawable.button_stick_pressed,
                     R.drawable.button_stick,
                     InputOverlaySurfaceView.this::onButtonStateChange,
                     OverlayButton.R_STICK,
@@ -539,7 +534,8 @@ public class InputOverlaySurfaceView extends SurfaceView implements View.OnTouch
                                 (int) (x2 - x1),
                                 (int) (y2 - y1),
                                 getWidth(),
-                                getHeight());
+                                getHeight(),
+                                inputsMinWidthHeight);
                     }
                     return true;
                 }

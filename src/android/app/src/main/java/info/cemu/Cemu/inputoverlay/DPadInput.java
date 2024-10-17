@@ -3,7 +3,6 @@ package info.cemu.Cemu.inputoverlay;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import androidx.annotation.DrawableRes;
@@ -11,6 +10,8 @@ import androidx.core.content.res.ResourcesCompat;
 
 import java.util.Objects;
 import java.util.function.Supplier;
+
+import info.cemu.Cemu.drawable.DrawableExtensions;
 
 public class DPadInput extends Input {
     Drawable iconDpadUp;
@@ -97,14 +98,14 @@ public class DPadInput extends Input {
         );
     }
 
-    public DPadInput(Resources resources, @DrawableRes int backgroundId, @DrawableRes int pressedButtonId, @DrawableRes int notPressedButtonId, ButtonStateChangeListener buttonStateChangeListener, InputOverlaySettingsProvider.InputOverlaySettings settings) {
+    public DPadInput(Resources resources, @DrawableRes int backgroundId, @DrawableRes int buttonId, ButtonStateChangeListener buttonStateChangeListener, InputOverlaySettingsProvider.InputOverlaySettings settings) {
         super(settings);
         this.buttonStateChangeListener = buttonStateChangeListener;
 
         background = Objects.requireNonNull(ResourcesCompat.getDrawable(resources, backgroundId, null));
 
-        Supplier<Drawable> getPressedButtonIcon = () -> Objects.requireNonNull(ResourcesCompat.getDrawable(resources, pressedButtonId, null));
-        Supplier<Drawable> getNotPressedButtonIcon = () -> Objects.requireNonNull(ResourcesCompat.getDrawable(resources, notPressedButtonId, null));
+        Supplier<Drawable> getNotPressedButtonIcon = () -> Objects.requireNonNull(ResourcesCompat.getDrawable(resources, buttonId, null));
+        Supplier<Drawable> getPressedButtonIcon = () -> DrawableExtensions.applyInvertedColorTransform(ResourcesCompat.getDrawable(resources, buttonId, null));
 
         iconDpadUpPressed = getPressedButtonIcon.get();
         iconDpadUpNotPressed = getNotPressedButtonIcon.get();
